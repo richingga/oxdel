@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Rocket, ShieldCheck, LayoutDashboard, Users } from "lucide-react";
 
-// Data fitur
 const features = [
   {
     icon: <Rocket className="w-12 h-12 text-blue-600 mb-2" />,
@@ -33,8 +32,8 @@ export default function HomePage() {
       {/* HERO SECTION */}
       <section className="flex flex-col items-center justify-center px-4 pt-24 pb-16">
         <div className="relative max-w-4xl w-full mx-auto">
-          {/* SVG Bubble Gradient */}
-          <svg className="absolute -top-20 -left-32 w-72 h-72 opacity-40 -z-10" viewBox="0 0 300 300">
+          {/* SVG Bubble hanya dekorasi */}
+          <svg className="absolute -top-20 -left-24 w-72 h-72 opacity-40 -z-10" viewBox="0 0 300 300">
             <defs>
               <radialGradient id="bubble1" cx="50%" cy="50%" r="70%">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6"/>
@@ -43,11 +42,11 @@ export default function HomePage() {
             </defs>
             <circle cx="150" cy="150" r="150" fill="url(#bubble1)" />
           </svg>
-          <svg className="absolute -bottom-20 -right-24 w-64 h-64 opacity-30 -z-10" viewBox="0 0 220 220">
+          <svg className="absolute -bottom-16 -right-24 w-60 h-60 opacity-30 -z-10" viewBox="0 0 220 220">
             <circle cx="110" cy="110" r="110" fill="#60a5fa" />
           </svg>
 
-          {/* Card Hero */}
+          {/* CARD HERO FLOATING */}
           <div className="bg-white/95 rounded-[2.5rem] shadow-2xl px-12 py-16 text-center border-none relative animate-fade-in-up">
             <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight">
               Platform <span className="text-blue-600">Undangan & Landing Page</span> <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-indigo-500 text-transparent bg-clip-text">#SaaS</span> Modern
@@ -69,7 +68,6 @@ export default function HomePage() {
                 Login
               </Link>
             </div>
-            {/* Ilustrasi SVG */}
             <img
               src="https://undraw.co/static/images/undraw_modern_design_re_dlp8.svg"
               alt="Oxdel Landing"
@@ -79,7 +77,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Divider Premium */}
+      {/* DIVIDER */}
       <div className="my-14 flex justify-center">
         <div className="h-1 w-32 bg-gradient-to-r from-blue-500/30 via-violet-400/20 to-transparent rounded-full blur-[2px]"></div>
       </div>
@@ -101,7 +99,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Divider Premium */}
+      {/* DIVIDER */}
       <div className="my-14 flex justify-center">
         <div className="h-1 w-32 bg-gradient-to-r from-violet-400/40 via-blue-400/30 to-transparent rounded-full blur-[2px]"></div>
       </div>
