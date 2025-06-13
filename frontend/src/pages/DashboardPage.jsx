@@ -1,149 +1,129 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import CreatePageModal from '../components/CreatePageModal';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Rocket, ShieldCheck, LayoutDashboard, Users } from "lucide-react";
 
-const StatusBadge = ({ status }) => {
-    const baseClasses = "px-2 py-1 text-xs font-semibold rounded-full";
-    if (status === 'published') return <span className={`${baseClasses} text-green-800 bg-green-100`}>Published</span>;
-    if (status === 'draft') return <span className={`${baseClasses} text-yellow-800 bg-yellow-100`}>Draft</span>;
-    return <span className={`${baseClasses} text-gray-800 bg-gray-100`}>{status}</span>;
-};
+const features = [
+  {
+    icon: <Rocket className="w-12 h-12 text-blue-600 mb-2" />,
+    title: "Deploy Instan",
+    desc: "Buat, kelola, dan publish halaman digital atau undangan hanya dalam hitungan menit.",
+  },
+  {
+    icon: <ShieldCheck className="w-12 h-12 text-green-600 mb-2" />,
+    title: "Keamanan Data",
+    desc: "Data kamu terenkripsi & private. Hanya kamu dan tamu yang bisa mengakses.",
+  },
+  {
+    icon: <LayoutDashboard className="w-12 h-12 text-purple-600 mb-2" />,
+    title: "Dashboard Analytics",
+    desc: "Pantau trafik, RSVP, performa undangan & halaman bisnis kamu secara realtime.",
+  },
+  {
+    icon: <Users className="w-12 h-12 text-yellow-600 mb-2" />,
+    title: "Kolaborasi & Afiliasi",
+    desc: "Bagi akses, undang tim/EO, dan dapatkan komisi dengan sistem afiliasi.",
+  },
+];
 
-const DashboardPage = ({ onLogout }) => {
-  const [user, setUser] = useState(null);
-  const [pages, setPages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const fetchData = useCallback(async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      onLogout();
-      return;
-    }
-    
-    try {
-      const [profileRes, pagesRes] = await Promise.all([
-          fetch('/api/users/profile', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/pages/mine', { headers: { 'Authorization': `Bearer ${token}` } })
-      ]);
-
-      if (!profileRes.ok || !pagesRes.ok) {
-        throw new Error('Gagal memuat data dashboard. Sesi Anda mungkin telah berakhir.');
-      }
-
-      const profileData = await profileRes.json();
-      const pagesData = await pagesRes.json();
-      
-      setUser(profileData);
-      setPages(pagesData);
-
-    } catch (err) {
-      setError(err.message);
-      onLogout(); // Logout jika terjadi error
-    } finally {
-      setLoading(false);
-    }
-  }, [onLogout]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const handlePageCreated = () => {
-    setIsModalOpen(false);
-    fetchData();
-  };
-
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen bg-slate-100">Memuat dashboard...</div>;
-  }
-  
+export default function HomePage() {
   return (
-    <>
-      <CreatePageModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onPageCreated={handlePageCreated}
-      />
-      <div className="min-h-screen bg-slate-100">
-          <header className="bg-white shadow-sm">
-            <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-              <a href="/" className="text-2xl font-bold text-slate-900">
-                  <span className="text-blue-600">Ox</span>del
-              </a>
-              <button 
-                  onClick={onLogout} 
-                  className="px-5 py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-lg"
-              >
-                  Keluar
-              </button>
-            </nav>
-          </header>
-          <main className="container mx-auto p-6">
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-slate-800">
-                        Selamat Datang, {user ? user.username : 'Pengguna'}!
-                    </h1>
-                    <p className="text-slate-600 mt-1">Kelola semua halaman website dan undangan Anda dari sini.</p>
-                </div>
-                <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-6 py-3 rounded-lg font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-all transform hover:-translate-y-0.5 self-start md:self-center">
-                    + Buat Halaman Baru
-                </button>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Halaman</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Dibuat</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {pages.length > 0 ? (
-                            pages.map(page => (
-                                <tr key={page.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{page.title}</div>
-                                        <div className="text-xs text-gray-500">/{page.slug}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="capitalize text-sm text-gray-700">{page.template_type}</span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <StatusBadge status={page.status} />
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(page.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                        <a href={`/${page.slug}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-900">Lihat</a>
-                                        <a href="#" className="text-blue-600 hover:text-blue-900">Edit</a>
-                                        <button className="text-red-600 hover:text-red-900">Hapus</button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5" className="text-center py-10 text-gray-500">
-                                    Anda belum memiliki halaman. <button onClick={() => setIsModalOpen(true)} className="text-blue-600 font-semibold">Buat yang pertama!</button>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-          </main>
-      </div>
-    </>
-  );
-};
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-violet-100 flex flex-col">
 
-export default DashboardPage;
+      {/* HERO SECTION */}
+      <section className="flex flex-col items-center justify-center px-4 pt-24 pb-16">
+        <div className="relative max-w-4xl w-full mx-auto">
+          {/* SVG Bubble hanya dekorasi, jangan terlalu besar */}
+          <svg className="absolute -top-20 -left-24 w-72 h-72 opacity-40 -z-10" viewBox="0 0 300 300">
+            <defs>
+              <radialGradient id="bubble1" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6"/>
+                <stop offset="100%" stopColor="#818cf8" stopOpacity="0.2"/>
+              </radialGradient>
+            </defs>
+            <circle cx="150" cy="150" r="150" fill="url(#bubble1)" />
+          </svg>
+          <svg className="absolute -bottom-16 -right-24 w-60 h-60 opacity-30 -z-10" viewBox="0 0 220 220">
+            <circle cx="110" cy="110" r="110" fill="#60a5fa" />
+          </svg>
+
+          {/* CARD HERO FLOATING */}
+          <div className="bg-white/95 rounded-[2.5rem] shadow-2xl px-12 py-16 text-center border-none relative animate-fade-in-up">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight">
+              Platform <span className="text-blue-600">Undangan & Landing Page</span> <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-indigo-500 text-transparent bg-clip-text">#SaaS</span> Modern
+            </h1>
+            <p className="text-lg sm:text-xl text-slate-700 mb-10 max-w-2xl mx-auto">
+              Buat & kelola undangan digital, landing page bisnis, analitik tamu, galeri, dan banyak lagi. Semua dalam satu platform super cepat & mudah!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Link
+                to="/register"
+                className="px-10 py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg shadow-lg hover:-translate-y-1 hover:shadow-2xl transition-all duration-150"
+              >
+                🚀 Daftar Gratis
+              </Link>
+              <Link
+                to="/login"
+                className="px-10 py-4 rounded-2xl bg-white border-2 border-blue-600 text-blue-600 font-bold text-lg shadow hover:bg-blue-50 hover:-translate-y-1 transition-all duration-150"
+              >
+                Login
+              </Link>
+            </div>
+            <img
+              src="https://undraw.co/static/images/undraw_modern_design_re_dlp8.svg"
+              alt="Oxdel Landing"
+              className="w-full max-w-lg mx-auto mt-10 rounded-2xl shadow-xl"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* DIVIDER */}
+      <div className="my-14 flex justify-center">
+        <div className="h-1 w-32 bg-gradient-to-r from-blue-500/30 via-violet-400/20 to-transparent rounded-full blur-[2px]"></div>
+      </div>
+
+      {/* FITUR UTAMA */}
+      <section className="py-12 px-4 bg-slate-50 animate-fade-in-up">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          {features.map((f, i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center p-8 rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 duration-200 animate-fade-in-up"
+              style={{ minWidth: 200 }}
+            >
+              {f.icon}
+              <h3 className="mt-2 mb-3 text-xl font-bold text-slate-900">{f.title}</h3>
+              <p className="text-slate-600 text-base">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* DIVIDER */}
+      <div className="my-14 flex justify-center">
+        <div className="h-1 w-32 bg-gradient-to-r from-violet-400/40 via-blue-400/30 to-transparent rounded-full blur-[2px]"></div>
+      </div>
+
+      {/* VALUE PROPOSITION */}
+      <section className="py-16 px-4 text-center">
+        <div className="max-w-3xl mx-auto bg-white/95 rounded-3xl shadow-2xl px-10 py-14 animate-fade-in-up">
+          <h2 className="text-3xl font-extrabold mb-4 text-slate-900">Mengapa Pilih Oxdel?</h2>
+          <p className="text-lg text-slate-700 mb-8">
+            Dengan teknologi terbaru, UI super clean, dan fitur terintegrasi, kamu bisa fokus ke acara/bisnis tanpa ribet urusan teknis. Dukungan prioritas & pembaruan fitur rutin!
+          </p>
+          <Link
+            to="/register"
+            className="inline-block px-10 py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg shadow-lg hover:-translate-y-1 hover:bg-blue-700 transition"
+          >
+            🚀 Coba Gratis Sekarang
+          </Link>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-6 text-center text-slate-500 text-sm bg-white/80 backdrop-blur rounded-t-2xl shadow mt-12">
+        © {new Date().getFullYear()} <span className="font-bold text-blue-600">Oxdel</span> — All rights reserved.
+      </footer>
+    </div>
+  );
+}
