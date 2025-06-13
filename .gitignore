@@ -1,0 +1,120 @@
+# Node modules & dependencies
+node_modules/
+jspm_packages/
+bower_components/
+
+# Production build output
+dist/
+build/
+out/
+.next/
+out-tsc/
+dist-ssr/
+
+# Vite
+.vite/
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.code-workspace
+
+# Mac system files
+.AppleDouble
+.LSOverride
+
+# npm cache
+.npm
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.tgz
+*.zip
+*.tar
+*.rar
+
+# Optional: Ignore public runtime cache
+.cache/
+.pnp/
+.pnp.js
+
+# Storybook build
+out-storybook/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional: Ignore VSCode launch configs except for extensions.json
+!.vscode/extensions.json
+
+# Optional: Ignore package-lock and yarn.lock if not needed
+# package-lock.json
+# yarn.lock
+
+# Lint and prettier caches
+.eslintcache
+.prettiercache
+
+# Optional: PM2 logs
+pids
+*.pid
+*.seed
+
+# Optional: Firebase
+.firebase/
+
+# Optional: Docker
+docker-compose.override.yml
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Optional: IDE JetBrains
+*.iml
+.idea/
+*.iws
+
+# Optional: SASS cache
+.sass-cache/
+
+# Optional: Parcel cache
+.cache/
+
+# Optional: Next.js
+.next/
+out/
+
+# Misc runtime files
+*.bak
+*.tmp
+*.temp
