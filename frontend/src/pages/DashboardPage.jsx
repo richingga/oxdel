@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// --- ICONS (Sebaiknya diletakkan di file terpisah) ---
+
+// --- ICONS (Inline SVG) ---
 const LayoutGridIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>;
 const FolderKanbanIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><path d="M8 10v4"/><path d="M12 10v2"/><path d="M16 10v6"/></svg>;
 const SettingsIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
@@ -14,25 +16,11 @@ const PanelRightCloseIcon = ({ className }) => <svg xmlns="http://www.w3.org/200
 const HelpCircleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-indigo-500"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>;
 const BookOpenIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-yellow-500"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
 const MessageSquareIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-500"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
-const ArrowLeftIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>;
-const SearchIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 
-// ====================================================================
-// START: DashboardPage.jsx LOGIC
-// ====================================================================
+// --- PAGE COMPONENTS ---
 
-const DashboardContent = ({ onNewProjectClick }) => (
-    <div className="animate-fade-in">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 capitalize">Dasbor</h1>
-                <p className="text-gray-600 mt-1">Selamat datang kembali, Budi!</p>
-            </div>
-            <button onClick={onNewProjectClick} className="mt-4 md:mt-0 flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-blue-300 transform hover:-translate-y-0.5">
-                <FilePlusIcon />
-                Buat Proyek Baru
-            </button>
-        </div>
+const DashboardOverview = () => (
+    <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <StatCard icon={<FolderIcon />} label="Total Proyek" value="4" colorClass="bg-blue-100" />
             <StatCard icon={<UsersIcon />} label="Pengunjung Bulan Ini" value="4.2K" colorClass="bg-green-100" />
@@ -46,121 +34,103 @@ const DashboardContent = ({ onNewProjectClick }) => (
 const ProjectList = ({ title = "Semua Proyek", showFilters = true }) => {
     const allProjects = [
         { title: "Pernikahan Rani & Budi", type: "Undangan Digital", status: "Published", visitors: "2.4K" },
-        { title: "Jasa Fotografi", type: "Layanan", status: "Published", visitors: "1.8K" },
-        { title: "Profil Perusahaan Tech", type: "Bisnis", status: "Draft", visitors: "0" },
+        { title: "Landing Page Jasa Fotografi", type: "Landing Page", status: "Published", visitors: "1.8K" },
+        { title: "Website Company Profile", type: "Website", status: "Draft", visitors: "0" },
+        { title: "Undangan Ulang Tahun Anak", type: "Undangan Digital", status: "Published", visitors: "350" },
+        { title: "Webinar Teknologi 2025", type: "Landing Page", status: "Draft", visitors: "0" },
+        { title: "Portfolio Desainer Grafis", type: "Website", status: "Published", visitors: "890" },
     ];
+    const [filter, setFilter] = useState('Semua');
+
+    const filteredProjects = allProjects.filter(p => {
+        if (filter === 'Semua') return true;
+        if (filter === 'Website') return p.type === 'Website' || p.type === 'Landing Page';
+        if (filter === 'Undangan') return p.type === 'Undangan Digital';
+        return true;
+    });
+
     return (
-        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-md mt-8">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">{title}</h2>
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-md">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 className="text-xl font-bold text-slate-800 mb-4 md:mb-0">{title}</h2>
+                {showFilters && (
+                    <div className="flex flex-wrap gap-2">
+                        <FilterButton label="Semua" active={filter === 'Semua'} onClick={() => setFilter('Semua')} />
+                        <FilterButton label="Website" active={filter === 'Website'} onClick={() => setFilter('Website')} />
+                        <FilterButton label="Undangan" active={filter === 'Undangan'} onClick={() => setFilter('Undangan')} />
+                    </div>
+                )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {allProjects.map((project, index) => <ProjectCard key={index} {...project} />)}
+                {filteredProjects.map((project, index) => (
+                    <ProjectCard key={index} {...project} />
+                ))}
             </div>
         </div>
     );
 };
 
-const HelpCenter = () => (
-    <div className="mt-8">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">Pusat Bantuan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <HelpCard icon={<HelpCircleIcon />} title="FAQ" description="Temukan jawaban." colorClass="bg-indigo-100" />
-            <HelpCard icon={<BookOpenIcon />} title="Tutorial" description="Pelajari cara penggunaan." colorClass="bg-yellow-100" />
-            <HelpCard icon={<MessageSquareIcon />} title="Hubungi Dukungan" description="Terhubung dengan tim kami." colorClass="bg-teal-100" />
+const AccountSettings = () => (
+    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-md">
+        <h2 className="text-xl font-bold text-slate-800 mb-6">Pengaturan Akun</h2>
+        <div className="space-y-6">
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                <input type="text" defaultValue="Budi Santoso" className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Alamat Email</label>
+                <input type="email" defaultValue="budi.santoso@example.com" className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+            <div>
+                <h3 className="text-lg font-semibold text-slate-800 mt-8 mb-4">Ubah Kata Sandi</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Kata Sandi Baru</label>
+                        <input type="password" placeholder="••••••••" className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
+                        <input type="password" placeholder="••••••••" className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+                    </div>
+                </div>
+            </div>
+            <div className="pt-6 text-right">
+                <button className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-blue-300">
+                    Simpan Perubahan
+                </button>
+            </div>
         </div>
     </div>
 );
 
-// ====================================================================
-// END: DashboardPage.jsx LOGIC
-// ====================================================================
-
-
-// ====================================================================
-// START: TemplatePicker.jsx LOGIC
-// ====================================================================
-
-const TemplatePicker = ({ onBack }) => {
-  const allTemplates = [
-    { category: 'Jasa & Layanan', title: 'Jasa Perbaikan AC', description: 'Butuh jasa cepat? Template ini menonjolkan nomor WhatsApp dan lokasi Anda agar pelanggan mudah menghubungi.', imageUrl: 'https://images.unsplash.com/photo-1542973449-b3a5d896472d?q=80&w=2070&auto=format&fit=crop', tags: ['Layanan Cepat', 'Servis'] },
-    { category: 'Jasa & Layanan', title: 'Jasa Laundry Kiloan', description: 'Tampilkan daftar layanan dan testimoni pelanggan untuk membangun kepercayaan bisnis laundry Anda.', imageUrl: 'https://images.unsplash.com/photo-1593113646773-ae18c83a87f2?q=80&w=2070&auto=format&fit=crop', tags: ['Kebersihan', 'Jasa'] },
-    { category: 'Undangan Digital', title: 'Undangan Pernikahan Elegan', description: 'Bagikan momen bahagia Anda dengan undangan online yang elegan, lengkap dengan fitur RSVP dan galeri foto.', imageUrl: 'https://images.unsplash.com/photo-1593259037198-c720f0223f1f?q=80&w=2070&auto=format&fit=crop', tags: ['Pernikahan', 'Formal'] },
-    { category: 'Undangan Digital', title: 'Undangan Ulang Tahun Anak', description: 'Sempurna untuk merayakan momen spesial anak dengan desain ceria, informatif, dan mudah dibagikan.', imageUrl: 'https://images.unsplash.com/photo-1510418355604-433e555776a3?q=80&w=2070&auto=format&fit=crop', tags: ['Anak', 'Perayaan'] },
-    { category: 'Portofolio Pribadi', title: 'Portofolio Fotografer', description: 'Biarkan karya visual Anda yang berbicara. Desain galeri besar untuk menampilkan hasil foto atau video terbaik.', imageUrl: 'https://images.unsplash.com/photo-1621361242318-450b73c49439?q=80&w=2070&auto=format&fit=crop', tags: ['Fotografi', 'Kreatif'] },
-    { category: 'Portofolio Pribadi', title: 'Portofolio Desainer', description: 'Desain minimalis untuk menonjolkan setiap detail karya seni atau proyek desain Anda.', imageUrl: 'https://images.unsplash.com/photo-1611117775531-502d9396f0c9?q=80&w=2070&auto=format&fit=crop', tags: ['Desain', 'Seni'] },
-    { category: 'Bisnis & UMKM', title: 'Toko Makanan & Minuman', description: 'Buat pelanggan lapar mata dengan foto produk yang menggugah selera dan tombol pesan yang mudah ditemukan.', imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1974&auto=format&fit=crop', tags: ['Kuliner', 'Toko Online'] },
-    { category: 'Bisnis & UMKM', title: 'Katalog Produk Fashion', description: 'Tampilkan koleksi fashion Anda dengan gaya. Mudah untuk menampilkan produk, detail, dan harga.', imageUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071&auto=format&fit=crop', tags: ['Fashion', 'UMKM'] },
-    { category: 'Kursus & Edukasi', title: 'Kursus Online', description: 'Jelaskan manfaat kursus Anda, tampilkan kurikulum, dan mudahkan pendaftaran dengan formulir yang simpel.', imageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop', tags: ['Edukasi', 'Online'] },
-    { category: 'Kursus & Edukasi', title: 'Bimbingan Belajar', description: 'Bangun kredibilitas dengan menampilkan profil pengajar ahli dan jadwal kelas yang jelas.', imageUrl: 'https://images.unsplash.com/photo-1588695955629-9e17c4918f67?q=80&w=2070&auto=format&fit=crop', tags: ['Mentoring', 'Pendidikan'] },
-  ];
-  
-  const categories = ['Semua', ...new Set(allTemplates.map(t => t.category))];
-  const [activeCategory, setActiveCategory] = useState('Semua');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredTemplates = allTemplates
-    .filter(template => activeCategory === 'Semua' || template.category === activeCategory)
-    .filter(template => 
-      template.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-
-  return (
-    <div className="w-full animate-fade-in">
-        <div className="mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex items-center gap-4">
-                    <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                        <ArrowLeftIcon className="w-6 h-6 text-slate-600" />
-                    </button>
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Pilih Template</h1>
-                        <p className="text-gray-600 mt-1">Pilih desain awal untuk memulai proyek baru Anda.</p>
-                    </div>
-                </div>
-                 <div className="relative w-full md:w-72">
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Cari template..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-            </div>
-
-             <div className="mt-8 flex flex-wrap gap-2">
-                {categories.map(category => (
-                    <FilterButton 
-                        key={category} 
-                        label={category} 
-                        active={activeCategory === category}
-                        onClick={() => setActiveCategory(category)}
-                    />
-                ))}
-            </div>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredTemplates.length > 0 ? (
-                 filteredTemplates.map(template => (
-                    <TemplateCard key={template.title} {...template} />
-                ))
-            ) : (
-                <p className="text-gray-500 col-span-full text-center py-10">Template tidak ditemukan. Coba kata kunci lain.</p>
-            )}
+const HelpCenter = () => (
+    <div className="mt-8">
+        <h2 className="text-xl font-bold text-slate-800 mb-4">Pusat Bantuan</h2>
+        <p className="text-gray-600 mb-6">Tempat bagi Anda untuk mendapatkan bantuan jika mengalami kesulitan.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <HelpCard 
+                icon={<HelpCircleIcon />}
+                title="FAQ"
+                description="Temukan jawaban untuk pertanyaan yang sering diajukan."
+                colorClass="bg-indigo-100"
+            />
+            <HelpCard 
+                icon={<BookOpenIcon />}
+                title="Tutorial"
+                description="Pelajari cara menggunakan fitur-fitur kami melalui panduan."
+                colorClass="bg-yellow-100"
+            />
+            <HelpCard 
+                icon={<MessageSquareIcon />}
+                title="Hubungi Dukungan"
+                description="Terhubung dengan tim kami untuk bantuan lebih lanjut."
+                colorClass="bg-teal-100"
+            />
         </div>
     </div>
-  );
-};
+);
 
-// ====================================================================
-// END: TemplatePicker.jsx LOGIC
-// ====================================================================
-
-
-// --- REUSABLE COMPONENTS ---
 const HelpCard = ({ icon, title, description, colorClass }) => (
     <a href="#" className="bg-white p-6 rounded-2xl shadow-md flex items-center space-x-4 hover:-translate-y-1 transition-transform duration-300">
         <div className={`p-3 rounded-full ${colorClass}`}>{icon}</div>
@@ -170,6 +140,7 @@ const HelpCard = ({ icon, title, description, colorClass }) => (
         </div>
     </a>
 );
+
 
 const StatCard = ({ icon, label, value, colorClass }) => (
     <div className="bg-white p-6 rounded-2xl shadow-md flex items-center space-x-4">
@@ -186,14 +157,16 @@ const ProjectCard = ({ title, type, status, visitors }) => (
         <div>
             <div className="flex justify-between items-start mb-2">
                 <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{type}</span>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{status}</span>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {status}
+                </span>
             </div>
             <h3 className="text-lg font-bold text-slate-800 mb-2">{title}</h3>
-            <p className="text-sm text-gray-500">{visitors} pengunjung</p>
+            <p className="text-sm text-gray-500">{visitors} pengunjung bulan ini</p>
         </div>
         <div className="mt-6 flex space-x-2">
-            <button className="w-full py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">Edit</button>
-            <button className="py-2 px-4 text-sm font-semibold bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Lihat</button>
+            <button className="w-full py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
+            <button className="py-2 px-4 text-sm font-semibold bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Lihat</button>
         </div>
     </div>
 );
@@ -204,55 +177,34 @@ const FilterButton = ({ label, active, onClick }) => (
     </button>
 );
 
-const TemplateCard = ({ title, description, imageUrl, tags }) => (
-  <div className="bg-white rounded-2xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 relative">
-    <div className="w-full h-48 bg-gray-200">
-      <img src={imageUrl} alt={title} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/600x400/e2e8f0/475569?text=Preview'; }}/>
-    </div>
-    <div className="p-5">
-      <h3 className="text-lg font-bold text-slate-800 mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 mb-4 h-10">{description}</p>
-      <div className="flex flex-wrap gap-2">
-        {tags.map(tag => (
-          <span key={tag} className="text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">{tag}</span>
-        ))}
-      </div>
-    </div>
-    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <button className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">
-        Pilih Template
-      </button>
-    </div>
-  </div>
-);
 
 // --- MAIN APP COMPONENT ---
 export default function App() {
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('dasbor');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const style = document.createElement('style');
-    style.innerHTML = `body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; } .animate-fade-in { animation: fadeIn 0.5s ease-in-out; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`;
+    style.innerHTML = `body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }`;
     document.head.appendChild(style);
+
     const fonts = document.createElement('link');
-    fonts.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";
+    fonts.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap";
     fonts.rel = "stylesheet";
     document.head.appendChild(fonts);
   }, []);
-  
+
   const renderContent = () => {
-      switch(activeView) {
-          case 'dashboard':
-              return <DashboardContent onNewProjectClick={() => setActiveView('templates')} />;
-          case 'projects':
+      switch(activeTab) {
+          case 'dasbor':
+              return <DashboardOverview />;
+          case 'proyek':
               return <ProjectList />;
-          case 'settings':
+          case 'pengaturan':
               return <AccountSettings />;
-          case 'templates':
-              return <TemplatePicker onBack={() => setActiveView('dashboard')} />;
           default:
-              return <DashboardContent onNewProjectClick={() => setActiveView('templates')} />;
+              return <DashboardOverview />;
       }
   };
   
@@ -260,9 +212,9 @@ export default function App() {
     <>
       <div className="flex-grow pt-32">
           <nav className="space-y-2">
-              <SidebarLink icon={<LayoutGridIcon />} label="Dasbor" active={activeView === 'dashboard'} onClick={() => setActiveView('dashboard')} />
-              <SidebarLink icon={<FolderKanbanIcon />} label="Proyek Saya" active={activeView === 'projects'} onClick={() => setActiveView('projects')} />
-              <SidebarLink icon={<SettingsIcon />} label="Pengaturan" active={activeView === 'settings'} onClick={() => setActiveView('settings')} />
+              <SidebarLink icon={<LayoutGridIcon />} label="Dasbor" active={activeTab === 'dasbor'} onClick={() => setActiveTab('dasbor')} />
+              <SidebarLink icon={<FolderKanbanIcon />} label="Proyek Saya" active={activeTab === 'proyek'} onClick={() => setActiveTab('proyek')} />
+              <SidebarLink icon={<SettingsIcon />} label="Pengaturan" active={activeTab === 'pengaturan'} onClick={() => setActiveTab('pengaturan')} />
           </nav>
       </div>
       <div>
@@ -274,6 +226,7 @@ export default function App() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <div className="relative flex">
+        {/* --- Tombol Toggle Sidebar (Visible on all screens) --- */}
         <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
             className={`fixed top-1/2 -translate-y-1/2 z-30 bg-white p-2 rounded-full shadow-md border hover:bg-gray-100 transition-all duration-300 ${isSidebarOpen ? 'left-[12rem] md:left-[16rem]' : 'left-4'}`}
@@ -282,12 +235,28 @@ export default function App() {
             {isSidebarOpen ? <PanelLeftCloseIcon className="w-5 h-5 text-gray-600"/> : <PanelRightCloseIcon className="w-5 h-5 text-gray-600"/>}
         </button>
         
+        {/* --- Sidebar (Visible on all screens) --- */}
         <aside className={`fixed top-0 left-0 h-full z-20 bg-white shadow-lg flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-48 md:w-64 p-6' : 'w-0 p-0 overflow-hidden'}`}>
             <SidebarContent />
         </aside>
 
+        {/* --- Main Content --- */}
         <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-48 md:ml-64' : 'ml-0'}`}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 capitalize">{activeTab}</h1>
+                        <p className="text-gray-600 mt-1">Selamat datang kembali, Budi!</p>
+                    </div>
+                    <button
+  onClick={() => navigate("/template-picker")}
+  className="mt-4 md:mt-0 flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-blue-300 transform hover:-translate-y-0.5"
+>
+  <FilePlusIcon />
+  Buat Proyek Baru
+</button>
+
+                </div>
                 {renderContent()}
             </div>
         </main>

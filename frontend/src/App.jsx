@@ -62,6 +62,7 @@ const App = () => {
           <div className="p-10 text-center text-xl text-gray-700">404 — Halaman tidak ditemukan.</div>
         </Layout>
       } />
+      <Route path="/template-picker" element={<TemplatePicker />} />
     </Routes>
   );
 };
