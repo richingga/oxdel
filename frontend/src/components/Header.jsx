@@ -1,90 +1,84 @@
-// 📁 src/components/Header.jsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 
-// Komponen Header Final yang dinamis
-// Menggabungkan desain visual dengan logika login/logout.
+// --- ICONS (Inline SVG) ---
+// Gunakan `X` dan `Menu` dari lucide-react jika sudah terinstal
+const MenuIcon = () => (
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+);
+const CloseIcon = () => (
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+);
+
+
 const Header = ({ isLoggedIn, onLogout }) => {
-    const location = useLocation();
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    // Jangan tampilkan header di halaman login/daftar
-    const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-    if (isAuthPage) return null;
-
-    // Fungsi untuk menentukan apakah sebuah link aktif
-    const isActive = (path) => location.pathname === path;
+    const toggleMenu = () => setMenuOpen((prev) => !prev);
+    
+    const navLinkClass = "font-semibold text-slate-700 hover:text-blue-600 transition-colors";
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 p-4">
-            <nav className="container mx-auto px-6 py-3 flex justify-between items-center bg-white/30 backdrop-blur-md rounded-full border border-white/40 shadow-lg">
-                {/* Logo */}
-                <Link to="/" className="text-2xl font-bold text-slate-900">
-                    <span className="text-blue-600">Ox</span>del
-                </Link>
-                
-                {/* Menu Navigasi (menggunakan Link dari React Router) */}
-                <div className="hidden md:flex items-center space-x-2 bg-slate-100/50 p-1 rounded-full">
-                    <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>Buat Website</Link>
-                    <Link to="/undangan" className={`nav-link ${isActive('/undangan') ? 'active' : ''}`}>Undangan Digital</Link>
-                </div>
+            <div className="container mx-auto px-6">
+                <nav className="relative flex justify-between items-center bg-white/80 backdrop-blur-md rounded-full border border-slate-200 shadow-lg px-6 py-3">
+                    {/* Ganti 'a' dengan 'Link' dari react-router-dom jika digunakan */}
+                    <a href="/" className="text-2xl font-bold text-slate-900">
+                        <span className="text-blue-600">Ox</span>del
+                    </a>
 
-                {/* Tombol Aksi Dinamis */}
-                <div className="flex items-center space-x-4">
-                    {isLoggedIn ? (
-                        <>
-                            <Link to="/dashboard" className="hidden sm:block text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Dashboard</Link>
-                            <button 
-                                onClick={onLogout} 
-                                className="px-5 py-2.5 rounded-full font-semibold text-sm text-white bg-slate-600 hover:bg-slate-700 shadow-lg transition-all duration-300"
-                            >
-                                Keluar
+                    <div className="flex items-center gap-2">
+                         {/* --- Desktop Auth Buttons --- */}
+                        <div className="hidden sm:flex items-center gap-2">
+                            {isLoggedIn ? (
+                                <button onClick={onLogout} className="px-5 py-2.5 rounded-full font-semibold text-sm text-white bg-red-600 hover:bg-red-700 transition-all duration-300">
+                                    Logout
+                                </button>
+                            ) : (
+                                <>
+                                    <a href="/login" className="px-4 py-2 rounded-full font-semibold text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300">Login</a>
+                                    <a href="/register" className="px-5 py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-400/50 transition-all duration-300 transform hover:-translate-y-0.5">Daftar</a>
+                                </>
+                            )}
+                        </div>
+                        
+                        {/* --- Mobile Menu Button --- */}
+                        <div className="md:hidden">
+                            <button onClick={toggleMenu} className="ml-2 text-slate-900 focus:outline-none">
+                                {menuOpen ? <CloseIcon /> : <MenuIcon />}
                             </button>
-                        </>
-                    ) : (
-                        <>
-                            <Link to="/login" className="hidden sm:block text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Login</Link>
-                            <Link to="/login" className="px-5 py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-400/50 transition-all duration-300 transform hover:-translate-y-0.5">
-                                Daftar
-                            </Link>
-                        </>
+                        </div>
+                    </div>
+
+                    {/* --- Mobile Menu Dropdown --- */}
+                    {menuOpen && (
+                         <div className="md:hidden absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
+                            <div className="flex flex-col gap-5">
+                                <a href="#" className={navLinkClass} onClick={toggleMenu}>Buat Website</a>
+                                <a href="#" className={navLinkClass} onClick={toggleMenu}>Undangan Digital</a>
+                                <hr className="border-t border-slate-200 my-2" />
+                                 {isLoggedIn ? (
+                                     <button
+                                        onClick={() => {
+                                            toggleMenu();
+                                            onLogout();
+                                        }}
+                                        className={`${navLinkClass} text-left text-red-600`}
+                                    >
+                                        Logout
+                                    </button>
+                                 ) : (
+                                     <>
+                                        <a href="/login" className={`${navLinkClass} sm:hidden`} onClick={toggleMenu}>Login</a>
+                                        <a href="/register" className="block sm:hidden w-full text-center px-5 py-3 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300" onClick={toggleMenu}>Daftar</a>
+                                     </>
+                                 )}
+                            </div>
+                        </div>
                     )}
-                </div>
-            </nav>
+                </nav>
+            </div>
         </header>
     );
 };
 
 export default Header;
-
-// --- Catatan untuk Implementasi ---
-/*
-1. Simpan kode ini sebagai file 'Header.jsx' di dalam folder 'frontend/src/components/'.
-2. Pastikan file 'frontend/src/index.css' Anda berisi gaya berikut untuk menu:
-
-   .nav-link {
-       @apply px-4 py-2 rounded-full font-semibold text-sm text-slate-700 hover:bg-white hover:text-blue-600 transition-all duration-300;
-   }
-   .nav-link.active {
-       @apply bg-white text-blue-600;
-   }
-
-3. Gunakan komponen Header ini di dalam komponen Layout atau App utama Anda.
-   Contoh di App.jsx:
-   
-   import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-   import Header from './components/Header';
-   
-   function App() {
-       const [isLoggedIn, setIsLoggedIn] = useState(false);
-       // ... logika login/logout ...
-
-       return (
-           <Router>
-                <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-                <Routes>
-                    // ... definisi rute Anda ...
-                </Routes>
-           </Router>
-       );
-   }
-*/

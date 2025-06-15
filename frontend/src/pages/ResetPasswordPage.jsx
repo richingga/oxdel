@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
               {/* Icon Mata Absolute - bawah kiri kolom konfirmasi */}
               <i
                 className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'} 
-                  absolute left-[30px] top-[58px] text-xs text-gray-600 cursor-pointer`}
+                  absolute left-[17px] top-[65px] text-xs text-gray-600 cursor-pointer`}
                 onClick={() => setShowPassword(!showPassword)}
               />
 

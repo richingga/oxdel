@@ -124,7 +124,7 @@ const AuthPage = ({ onLoginSuccess }) => {
                   className="w-full pr-10"
                 />
                 <i
-                  className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'} absolute left-[29px] bottom-[-20px] text-sm text-gray-600 cursor-pointer`}
+                  className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'} absolute left-[20px] bottom-[-25px] text-sm text-gray-600 cursor-pointer`}
                   onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
@@ -206,7 +206,7 @@ const AuthPage = ({ onLoginSuccess }) => {
                     className="w-full pr-10"
                   />
                   <i
-                    className={`fa ${showRegisterPassword ? 'fa-eye-slash' : 'fa-eye'} absolute left-[29px] bottom-[-20px] text-sm text-gray-600 cursor-pointer`}
+                    className={`fa ${showRegisterPassword ? 'fa-eye-slash' : 'fa-eye'} absolute left-[20px] bottom-[-25px] text-sm text-gray-600 cursor-pointer`}
                     onClick={() => setShowRegisterPassword(!showRegisterPassword)}
                   />
                 </div>
