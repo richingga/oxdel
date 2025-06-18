@@ -1,15 +1,25 @@
 import express from 'express';
-import { getMyPages, createPage } from '../controllers/pageController.js';
+import {
+  createPage,
+  getMyPages,
+  getPageById,
+  updatePage
+} from '../controllers/pageController.js';
+
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(protect); // Melindungi semua rute di file ini
+// Mendapatkan daftar semua page milik user login
+router.get('/mine', protect, getMyPages);
 
-router.route('/')
-    .post(createPage); // POST /api/pages
+// Buat page/undangan baru (user login)
+router.post('/', protect, createPage);
 
-router.route('/mine')
-    .get(getMyPages); // GET /api/pages/mine
+// Ambil detail satu page (user login)
+router.get('/:id', protect, getPageById);
+
+// Update page/undangan milik user
+router.put('/:id', protect, updatePage);
 
 export default router;

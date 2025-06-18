@@ -7,6 +7,8 @@ import DashboardPage from './pages/DashboardPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import TemplatePicker from './pages/TemplatePicker';
+import AdminPage from "./pages/AdminPage";
+
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -62,7 +64,18 @@ const App = () => {
           <div className="p-10 text-center text-xl text-gray-700">404 — Halaman tidak ditemukan.</div>
         </Layout>
       } />
-      <Route path="/template-picker" element={<TemplatePicker />} />
+      <Route path="/template-picker" element={
+  <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
+    <TemplatePicker />
+  </Layout>
+} />
+<Route path="/ox-admin" element={<AdminPage />} />
+      {/* Route 404 tetap di bawah */}
+      <Route path="*" element={
+        <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
+          <div className="p-10 text-center text-xl text-gray-700">404 — Halaman tidak ditemukan.</div>
+        </Layout>
+      } />
     </Routes>
   );
 };
