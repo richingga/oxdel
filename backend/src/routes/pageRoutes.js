@@ -3,23 +3,28 @@ import {
   createPage,
   getMyPages,
   getPageById,
-  updatePage
+  updatePage,
+  deletePage,
+  getPublicPage,
+  renderPublicPage,
+  getPageAnalytics
 } from '../controllers/pageController.js';
 
 import { protect } from '../middleware/authMiddleware.js';
+import { validatePage, validateId, validatePagination } from '../middleware/validation.js';
 
 const router = express.Router();
 
-// Mendapatkan daftar semua page milik user login
-router.get('/mine', protect, getMyPages);
+// Public routes
+router.get('/public/:slug', getPublicPage);
+router.get('/render/:slug', renderPublicPage);
 
-// Buat page/undangan baru (user login)
-router.post('/', protect, createPage);
-
-// Ambil detail satu page (user login)
-router.get('/:id', protect, getPageById);
-
-// Update page/undangan milik user
-router.put('/:id', protect, updatePage);
+// Protected routes
+router.get('/mine', protect, validatePagination, getMyPages);
+router.post('/', protect, validatePage, createPage);
+router.get('/:id', protect, validateId, getPageById);
+router.put('/:id', protect, validateId, updatePage);
+router.delete('/:id', protect, validateId, deletePage);
+router.get('/:id/analytics', protect, validateId, getPageAnalytics);
 
 export default router;

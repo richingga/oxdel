@@ -2,29 +2,34 @@ import express from 'express';
 import {
   getTemplates,
   getTemplateById,
+  getTemplateForBuilder,
+  getTemplatePreview,
   createTemplate,
   updateTemplate,
-  deleteTemplate
+  deleteTemplate,
+  getTemplateCategories,
+  getTemplateTypes
 } from '../controllers/templateController.js';
 
 import { protect } from '../middleware/authMiddleware.js';
 import adminMiddleware from '../middleware/adminMiddleware.js';
+import { validateTemplate, validateId, validatePagination } from '../middleware/validation.js';
 
 const router = express.Router();
 
-// Semua user bisa lihat daftar template
-router.get('/', getTemplates);
+// Public routes
+router.get('/', validatePagination, getTemplates);
+router.get('/categories', getTemplateCategories);
+router.get('/types', getTemplateTypes);
+router.get('/:id', validateId, getTemplateById);
+router.get('/:id/preview', validateId, getTemplatePreview);
 
-// Semua user bisa lihat detail satu template
-router.get('/:id', getTemplateById);
+// Protected routes - untuk builder
+router.get('/:id/builder', protect, validateId, getTemplateForBuilder);
 
-// Admin tambah template baru
-router.post('/', protect, adminMiddleware, createTemplate);
-
-// Admin edit template
-router.put('/:id', protect, adminMiddleware, updateTemplate);
-
-// Admin hapus template
-router.delete('/:id', protect, adminMiddleware, deleteTemplate);
+// Admin only routes
+router.post('/', protect, adminMiddleware, validateTemplate, createTemplate);
+router.put('/:id', protect, adminMiddleware, validateId, validateTemplate, updateTemplate);
+router.delete('/:id', protect, adminMiddleware, validateId, deleteTemplate);
 
 export default router;

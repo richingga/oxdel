@@ -7,8 +7,8 @@ import DashboardPage from './pages/DashboardPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import TemplatePicker from './pages/TemplatePicker';
+import TemplateBuilder from './components/TemplateBuilder';
 import AdminPage from "./pages/AdminPage";
-
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,41 +39,55 @@ const App = () => {
           <HomePage />
         </Layout>
       } />
+      
       <Route path="/login" element={
         <RedirectIfAuthenticated>
           <AuthPage onLoginSuccess={handleLoginSuccess} />
         </RedirectIfAuthenticated>
       } />
+      
       <Route path="/register" element={
         <RedirectIfAuthenticated>
           <AuthPage onLoginSuccess={handleLoginSuccess} />
         </RedirectIfAuthenticated>
       } />
+      
       <Route path="/reset-password/:token" element={
         <RedirectIfAuthenticated>
           <ResetPasswordPage />
         </RedirectIfAuthenticated>
       } />
+      
       <Route path="/dashboard" element={
         <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
           <DashboardPage onLogout={handleLogout} />
         </Layout>
       } />
-      <Route path="*" element={
+      
+      <Route path="/template-picker" element={
         <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
-          <div className="p-10 text-center text-xl text-gray-700">404 — Halaman tidak ditemukan.</div>
+          <TemplatePicker />
         </Layout>
       } />
-      <Route path="/template-picker" element={
-  <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
-    <TemplatePicker />
-  </Layout>
-} />
-<Route path="/ox-admin" element={<AdminPage />} />
-      {/* Route 404 tetap di bawah */}
+
+      {/* Builder Routes */}
+      <Route path="/builder/template/:templateId" element={
+        <TemplateBuilder />
+      } />
+      
+      <Route path="/builder/page/:pageId" element={
+        <TemplateBuilder />
+      } />
+
+      {/* Admin Route */}
+      <Route path="/ox-admin" element={<AdminPage />} />
+
+      {/* 404 Route */}
       <Route path="*" element={
         <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
-          <div className="p-10 text-center text-xl text-gray-700">404 — Halaman tidak ditemukan.</div>
+          <div className="p-10 text-center text-xl text-gray-700">
+            404 — Halaman tidak ditemukan.
+          </div>
         </Layout>
       } />
     </Routes>
