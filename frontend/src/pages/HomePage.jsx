@@ -1,34 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 
-// --- ICONS (Dapat dipindahkan ke file terpisah seperti icons.js) ---
+// --- ICONS ---
 const WebsiteIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
 const LandingPageIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><path d="m15 3-6 6 6 6"/><path d="M3 12h12"/></svg>;
 const InvitationIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>;
 const AdsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>;
 const SeoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>;
 
-
 // --- PAGE SECTIONS ---
-const HeroSection = () => (
+const HeroSection = ({ stats }) => (
     <section>
-        {/* Mengurangi padding atas di mobile, dan menjaga padding di desktop */}
         <div className="relative container mx-auto px-4 pt-24 pb-16 md:pt-25 md:pb-20 z-10">
-            {/* Menghapus min-height di mobile, menambah padding vertikal di desktop */}
             <div className="bg-white rounded-3xl shadow-xl p-8 md:py-20 md:px-16 text-center flex flex-col justify-center">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-4 tracking-tighter">
                         Wujudkan Ide Anda, <br />
                         <span className="font-serif bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">Tanpa Batas Kreativitas.</span>
                     </h1>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-slate-700 mb-10">
+                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-slate-700 mb-6">
                         Platform termudah untuk membangun landing page, website, dan undangan digital yang memukau. Cepat, modern, dan tanpa perlu coding.
                     </p>
+                    
+                    {/* Stats */}
+                    {stats && (
+                        <div className="flex justify-center gap-8 mb-8 text-sm text-gray-600">
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-blue-600">{stats.totalTemplates}+</div>
+                                <div>Template</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-green-600">{stats.totalUsers}+</div>
+                                <div>Pengguna</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-purple-600">{stats.totalPages}+</div>
+                                <div>Proyek</div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex justify-center flex-col sm:flex-row gap-4">
-                        <a href="/dashboard" className="px-8 py-4 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105">
+                        <a href="/register" className="px-8 py-4 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105">
                             Mulai Sekarang
                         </a>
                         <a href="#templates" className="px-8 py-4 rounded-full font-bold text-blue-700 bg-white hover:bg-blue-100 border border-blue-200 transition-colors duration-300">
-                            Lihat Layanan
+                            Lihat Template
                         </a>
                     </div>
                 </div>
@@ -37,193 +54,319 @@ const HeroSection = () => (
     </section>
 );
 
-const featuresData = [
-    { icon: <WebsiteIcon />, title: "Pembuatan Website", description: "Bangun citra profesional bisnis Anda dengan website modern yang responsif." },
-    { icon: <LandingPageIcon />, title: "Landing Page Efektif", description: "Tingkatkan konversi penjualan dengan landing page yang fokus pada tujuan." },
-    { icon: <SeoIcon />, title: "SEO & Analitik", description: "Optimalkan peringkat website Anda di Google dan pahami perilaku pengunjung." },
-    { icon: <InvitationIcon />, title: "Undangan Digital", description: "Buat kesan tak terlupakan dengan undangan acara yang modern dan interaktif." },
-    { icon: <AdsIcon />, title: "Iklan Digital Ads", description: "Jangkau audiens yang tepat melalui Google & Social Media Ads yang terukur." }
-];
+const FeaturesSection = () => {
+    const featuresData = [
+        { 
+            icon: <WebsiteIcon />, 
+            title: "Website Profesional", 
+            description: "Bangun citra profesional bisnis Anda dengan website modern yang responsif dan SEO-friendly." 
+        },
+        { 
+            icon: <LandingPageIcon />, 
+            title: "Landing Page Efektif", 
+            description: "Tingkatkan konversi penjualan dengan landing page yang fokus pada tujuan dan optimasi tinggi." 
+        },
+        { 
+            icon: <InvitationIcon />, 
+            title: "Undangan Digital", 
+            description: "Buat kesan tak terlupakan dengan undangan acara yang modern, interaktif, dan mudah dibagikan." 
+        },
+        { 
+            icon: <AdsIcon />, 
+            title: "Katalog Jasa", 
+            description: "Tampilkan layanan Anda dengan profesional - dari jasa sedot WC hingga wedding organizer." 
+        },
+        { 
+            icon: <SeoIcon />, 
+            title: "SEO Optimized", 
+            description: "Semua template sudah dioptimalkan untuk mesin pencari agar mudah ditemukan pelanggan." 
+        }
+    ];
 
-const FeaturesSection = () => (
-    <section id="fitur" className="py-20 overflow-x-hidden">
-        <div className="container mx-auto px-6 text-center mb-16">
-            <h2 className="text-4xl font-bold mb-3 tracking-tight">Layanan Profesional Kami</h2>
-            <p className="text-lg text-slate-700 max-w-2xl mx-auto">Kami menyediakan solusi digital lengkap untuk membantu bisnis Anda bertumbuh.</p>
-        </div>
-        <swiper-container
-            class="feature-carousel"
-            slides-per-view="auto"
-            effect="coverflow"
-            grab-cursor="true"
-            centered-slides="true"
-            loop="true"
-            autoplay-delay="3500"
-            coverflow-effect-rotate="0"
-            coverflow-effect-stretch="80"
-            coverflow-effect-depth="200"
-            coverflow-effect-modifier="1"
-            coverflow-effect-slide-shadows="false"
-            pagination="true"
-            pagination-clickable="true"
-            breakpoints='{
-                "768": {
-                    "slidesPerView": 3
-                }
-            }'
-        >
-            {featuresData.map((feature, index) => (
-                <swiper-slide key={index}>
-                    <div className="bg-white border border-slate-200 p-8 rounded-3xl shadow-lg h-full flex flex-col items-center text-center">
-                        <div className="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30 flex-shrink-0">
-                            {feature.icon}
+    return (
+        <section id="fitur" className="py-20 overflow-x-hidden">
+            <div className="container mx-auto px-6 text-center mb-16">
+                <h2 className="text-4xl font-bold mb-3 tracking-tight">Solusi Digital Lengkap</h2>
+                <p className="text-lg text-slate-700 max-w-2xl mx-auto">Dari undangan digital hingga website bisnis, semua kebutuhan digital Anda tersedia di satu platform.</p>
+            </div>
+            
+            <div className="container mx-auto px-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {featuresData.map((feature, index) => (
+                        <div key={index} className="bg-white border border-slate-200 p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+                                {feature.icon}
+                            </div>
+                            <h3 className="text-2xl font-bold mb-3 text-slate-900">{feature.title}</h3>
+                            <p className="text-slate-700">{feature.description}</p>
                         </div>
-                        <h3 className="text-2xl font-bold mb-3 text-slate-900">{feature.title}</h3>
-                        <p className="text-slate-700">{feature.description}</p>
-                    </div>
-                </swiper-slide>
-            ))}
-        </swiper-container>
-    </section>
-);
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
 
-const templatesData = [
-    { title: "Agensi Kreatif", image: "https://placehold.co/400x400/3b82f6/ffffff?text=Kreatif" },
-    { title: "Undangan Pernikahan", image: "https://placehold.co/400x400/ec4899/ffffff?text=Wedding" },
-    { title: "Portofolio Fotografer", image: "https://placehold.co/400x400/8b5cf6/ffffff?text=Portfolio" },
-    { title: "Toko Online", image: "https://placehold.co/400x400/10b981/ffffff?text=Toko" },
-    { title: "Restoran", image: "https://placehold.co/400x400/f97316/ffffff?text=Resto" },
-    { title: "Event Musik", image: "https://placehold.co/400x400/ef4444/ffffff?text=Event" },
-];
-
-const TemplatesSection = () => (
+const TemplatesSection = ({ templates, loading }) => (
     <section id="templates" className="py-20">
         <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold mb-3 tracking-tight">Mulai dengan Desain Profesional</h2>
-                <p className="text-lg text-slate-700 max-w-2xl mx-auto">Pilih template yang paling sesuai dan sesuaikan sesuka hati Anda.</p>
+                <h2 className="text-4xl font-bold mb-3 tracking-tight">Template Siap Pakai</h2>
+                <p className="text-lg text-slate-700 max-w-2xl mx-auto">
+                    Pilih dari {templates.length}+ template profesional yang dapat disesuaikan dengan kebutuhan Anda.
+                </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {templatesData.map((template, index) => (
-                     <div key={index} className="group relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 border border-slate-200">
-                        <div className="aspect-square">
-                           <img src={template.image} alt={template.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                        </div>
-                        <div className="p-4 sm:p-6">
-                            <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-4">{template.title}</h3>
-                            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                                <button className="w-full py-2.5 rounded-full font-semibold text-sm bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-300">Preview</button>
-                                <button className="w-full py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300">Gunakan</button>
+            
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {templates.slice(0, 6).map((template) => (
+                        <div key={template.id} className="group relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 border border-slate-200">
+                            <div className="aspect-square relative">
+                                <img 
+                                    src={template.thumbnail_url || template.preview_url || `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`} 
+                                    alt={template.name} 
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    onError={(e) => {
+                                        e.target.src = `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`;
+                                    }}
+                                />
+                                {template.is_premium && (
+                                    <div className="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                        Premium
+                                    </div>
+                                )}
+                                {template.featured && (
+                                    <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                        Featured
+                                    </div>
+                                )}
+                            </div>
+                            <div className="p-4 sm:p-6">
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-1">{template.name}</h3>
+                                    {template.rating > 0 && (
+                                        <div className="flex items-center text-yellow-500 text-sm">
+                                            <span>★</span>
+                                            <span className="ml-1">{template.rating}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex gap-2 mb-4">
+                                    <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">
+                                        {template.category}
+                                    </span>
+                                    <span className="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">
+                                        {template.type}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                                    <a 
+                                        href={`/api/templates/${template.id}/preview`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-300"
+                                    >
+                                        Preview
+                                    </a>
+                                    <a 
+                                        href="/register"
+                                        className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+                                    >
+                                        Gunakan
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
+            )}
+            
+            <div className="text-center mt-12">
+                <a 
+                    href="/template-picker"
+                    className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-blue-300"
+                >
+                    Lihat Semua Template
+                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
 );
 
-const testimonialsData = [
-    { name: "Andi Pratama", role: "CEO, Startup Maju", image: "https://placehold.co/100x100/e2e8f0/334155?text=A", text: "\"Landing page yang dibuat oleh tim Oxdel benar-benar meningkatkan konversi kami. Desainnya modern dan prosesnya sangat cepat. Sangat direkomendasikan!\"" },
-    { name: "Siti Rahayu", role: "Wedding Organizer", image: "https://placehold.co/100x100/e2e8f0/334155?text=S", text: "\"Undangan digitalnya luar biasa! Klien kami sangat suka dengan fitur RSVP dan galeri foto. Membuat acara terasa lebih spesial dan terorganisir.\"" },
-    { name: "Budi Santoso", role: "Pemilik Restoran", image: "https://placehold.co/100x100/e2e8f0/334155?text=B", text: "\"Berkat Google Ads yang dikelola Oxdel, restoran kami jadi lebih ramai. Target iklannya pas dan laporannya sangat jelas. Terima kasih banyak!\"" }
-];
+const TestimonialsSection = () => {
+    const testimonialsData = [
+        { 
+            name: "Andi Pratama", 
+            role: "CEO, Startup Maju", 
+            image: "https://placehold.co/100x100/e2e8f0/334155?text=A", 
+            text: "Landing page yang dibuat dengan Oxdel benar-benar meningkatkan konversi kami hingga 300%. Prosesnya sangat mudah dan hasilnya profesional!" 
+        },
+        { 
+            name: "Siti Rahayu", 
+            role: "Wedding Organizer", 
+            image: "https://placehold.co/100x100/e2e8f0/334155?text=S", 
+            text: "Undangan digitalnya luar biasa! Klien kami sangat suka dengan fitur RSVP dan galeri foto. Membuat acara terasa lebih spesial dan modern." 
+        },
+        { 
+            name: "Budi Santoso", 
+            role: "Pemilik Jasa Sedot WC", 
+            image: "https://placehold.co/100x100/e2e8f0/334155?text=B", 
+            text: "Berkat website dari Oxdel, bisnis jasa saya jadi lebih profesional. Pelanggan mudah menghubungi dan order meningkat drastis!" 
+        }
+    ];
 
-const TestimonialsSection = () => (
-    <section id="testimonials" className="py-20">
-        <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold mb-3 tracking-tight">Dipercaya oleh Ratusan Klien</h2>
-                <p className="text-lg text-slate-700 max-w-2xl mx-auto">Lihat apa kata mereka tentang layanan kami.</p>
-            </div>
-            <swiper-container
-                class="testimonial-carousel"
-                slides-per-view="1"
-                effect="slide"
-                grab-cursor="true"
-                centered-slides="true"
-                loop="true"
-                autoplay-delay="5000"
-                pagination="true"
-                pagination-clickable="true"
-            >
-                {testimonialsData.map((testimonial, index) => (
-                    <swiper-slide key={index}>
-                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl mx-auto">
-                            <div className="flex items-center mb-4">
-                                <img className="w-14 h-14 rounded-full object-cover mr-4" src={testimonial.image} alt={`Foto ${testimonial.name}`} />
+    return (
+        <section id="testimonials" className="py-20 bg-slate-50">
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold mb-3 tracking-tight">Dipercaya Ribuan Pengguna</h2>
+                    <p className="text-lg text-slate-700 max-w-2xl mx-auto">Lihat apa kata mereka tentang pengalaman menggunakan Oxdel.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {testimonialsData.map((testimonial, index) => (
+                        <div key={index} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center mb-6">
+                                <img 
+                                    className="w-14 h-14 rounded-full object-cover mr-4" 
+                                    src={testimonial.image} 
+                                    alt={`Foto ${testimonial.name}`} 
+                                />
                                 <div>
                                     <p className="font-bold text-slate-800">{testimonial.name}</p>
                                     <p className="text-sm text-slate-500">{testimonial.role}</p>
                                 </div>
                             </div>
-                            <p className="text-slate-600 italic">{testimonial.text}</p>
+                            <p className="text-slate-600 italic leading-relaxed">"{testimonial.text}"</p>
                         </div>
-                    </swiper-slide>
-                ))}
-            </swiper-container>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const CTASection = () => (
+    <section className="py-20">
+        <div className="container mx-auto px-6">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-16 text-center text-white">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">Siap Memulai Proyek Anda?</h2>
+                <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+                    Bergabunglah dengan ribuan pengguna yang telah mempercayai Oxdel untuk kebutuhan digital mereka.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a 
+                        href="/register"
+                        className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+                    >
+                        Daftar Gratis Sekarang
+                    </a>
+                    <a 
+                        href="/template-picker"
+                        className="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-blue-600 transition-colors duration-300"
+                    >
+                        Jelajahi Template
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 );
 
+// --- MAIN COMPONENT ---
+export default function HomePage() {
+    const [templates, setTemplates] = useState([]);
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-// --- MAIN APP COMPONENT ---
-export default function App() {
-  useEffect(() => {
-    const swiperScriptId = 'swiper-script';
-    if (document.getElementById(swiperScriptId)) return;
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch templates
+                const templatesResponse = await fetch('/api/templates?limit=6&featured=true');
+                if (templatesResponse.ok) {
+                    const templatesData = await templatesResponse.json();
+                    setTemplates(templatesData.data || []);
+                }
 
-    const fonts = document.createElement('link');
-    fonts.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap";
-    fonts.rel = "stylesheet";
-    
-    const swiperScript = document.createElement('script');
-    swiperScript.id = swiperScriptId;
-    swiperScript.src = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js";
-    swiperScript.defer = true;
-    
-    const style = document.createElement('style');
-    style.innerHTML = `
-        body { font-family: 'Inter', sans-serif; background-color: #eff6ff; color: #1e293b; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .swiper-pagination-bullet { background-color: #93c5fd !important; }
-        .swiper-pagination-bullet-active { background-color: #2563eb !important; }
-        .feature-carousel { padding-top: 20px !important; padding-bottom: 50px !important; overflow: visible !important; }
-        .feature-carousel swiper-slide {
-            width: 320px;
-            height: auto;
-            transition: transform 0.6s, opacity 0.6s;
-            transform: scale(0.8);
-            opacity: 0.6;
-        }
-        .feature-carousel .swiper-slide-active {
-            transform: scale(1.1);
-            opacity: 1;
-            z-index: 10;
-        }
-        .testimonial-carousel swiper-slide { 
-            height: auto; 
-            display: flex; 
-            justify-content: center; 
-            padding-bottom: 4rem; 
-        }
-    `;
+                // Fetch basic stats (public endpoint would be ideal)
+                const statsResponse = await fetch('/api/templates');
+                if (statsResponse.ok) {
+                    const allTemplates = await statsResponse.json();
+                    setStats({
+                        totalTemplates: allTemplates.data?.length || 0,
+                        totalUsers: 1250, // This would come from a public stats endpoint
+                        totalPages: 3400  // This would come from a public stats endpoint
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching homepage data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    document.head.appendChild(fonts);
-    document.head.appendChild(style);
-    document.body.appendChild(swiperScript);
-  }, []);
+        fetchData();
+    }, []);
 
-  return (
-    <div className="antialiased">
-      {/* <Header /> */}
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <TemplatesSection />
-        <TestimonialsSection />
-      </main>
-      {/* <Footer /> */}
-    </div>
-  );
+    return (
+        <>
+            <Helmet>
+                <title>Oxdel - Platform Undangan Digital & Website Profesional</title>
+                <meta name="description" content="Buat undangan digital, landing page, dan website profesional dengan mudah. Template siap pakai untuk wedding, bisnis, jasa, dan portofolio. Tanpa coding, hasil profesional." />
+                <meta name="keywords" content="undangan digital, website builder, landing page, template wedding, jasa sedot wc, portofolio, bisnis online" />
+                
+                {/* Open Graph */}
+                <meta property="og:title" content="Oxdel - Platform Undangan Digital & Website Profesional" />
+                <meta property="og:description" content="Buat undangan digital, landing page, dan website profesional dengan mudah. Template siap pakai untuk wedding, bisnis, jasa, dan portofolio." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://oxdel.id" />
+                <meta property="og:image" content="https://oxdel.id/og-image.jpg" />
+                
+                {/* Twitter Card */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="Oxdel - Platform Undangan Digital & Website Profesional" />
+                <meta name="twitter:description" content="Buat undangan digital, landing page, dan website profesional dengan mudah." />
+                <meta name="twitter:image" content="https://oxdel.id/og-image.jpg" />
+                
+                {/* Canonical */}
+                <link rel="canonical" href="https://oxdel.id" />
+                
+                {/* Schema.org structured data */}
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "WebApplication",
+                        "name": "Oxdel",
+                        "description": "Platform untuk membuat undangan digital, landing page, dan website profesional",
+                        "url": "https://oxdel.id",
+                        "applicationCategory": "WebApplication",
+                        "operatingSystem": "Web Browser",
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "0",
+                            "priceCurrency": "IDR"
+                        }
+                    })}
+                </script>
+            </Helmet>
+
+            <div className="antialiased">
+                <main>
+                    <HeroSection stats={stats} />
+                    <FeaturesSection />
+                    <TemplatesSection templates={templates} loading={loading} />
+                    <TestimonialsSection />
+                    <CTASection />
+                </main>
+            </div>
+        </>
+    );
 }

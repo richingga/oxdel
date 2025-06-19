@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /ox-admin
+Disallow: /dashboard
+Disallow: /builder
+Disallow: /login
+Disallow: /register
+Disallow: /reset-password
+
+# Allow public pages and templates
+Allow: /template-picker
+Allow: /api/templates/*/preview
+
+# Sitemap
+Sitemap: https://oxdel.id/sitemap.xml
