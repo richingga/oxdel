@@ -1,25 +1,47 @@
 import React from "react";
+
 export default function AdminSidebar({ section, setSection }) {
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'templates', label: 'Template', icon: '🎨' },
+    { id: 'users', label: 'User', icon: '👥' },
+    { id: 'affiliates', label: 'Affiliasi', icon: '🤝' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' },
+    { id: 'logs', label: 'Log User', icon: '📋' }
+  ];
+
   return (
     <aside className="w-60 bg-white shadow-lg flex flex-col py-8">
-      <h2 className="text-2xl font-bold px-8 pb-6">Oxdel Admin</h2>
-      <nav className="flex flex-col gap-2 px-8">
-        <button className={section === "dashboard" ? "font-bold text-blue-700" : ""}
-                onClick={() => setSection("dashboard")}>Dashboard</button>
-        <button className={section === "templates" ? "font-bold text-blue-700" : ""}
-                onClick={() => setSection("templates")}>Template</button>
-        <button className={section === "users" ? "font-bold text-blue-700" : ""}
-                onClick={() => setSection("users")}>User</button>
-        <button className={section === "affiliates" ? "font-bold text-blue-700" : ""}
-                onClick={() => setSection("affiliates")}>Affiliasi</button>
-        <button className={section === "logs" ? "font-bold text-blue-700" : ""}
-                onClick={() => setSection("logs")}>Log User</button>
-        <button className="mt-8 text-red-600 text-left"
+      <h2 className="text-2xl font-bold px-8 pb-6 text-blue-600">Oxdel Admin</h2>
+      <nav className="flex flex-col gap-2 px-8 flex-grow">
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+              section === item.id 
+                ? "bg-blue-600 text-white font-semibold" 
+                : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            }`}
+            onClick={() => setSection(item.id)}
+          >
+            <span className="text-lg">{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+      </nav>
+      
+      <div className="px-8 pt-4 border-t border-gray-200">
+        <button 
+          className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           onClick={() => {
             localStorage.removeItem("token");
             window.location.href = "/login";
-          }}>Logout</button>
-      </nav>
+          }}
+        >
+          <span className="text-lg">🚪</span>
+          Logout
+        </button>
+      </div>
     </aside>
   );
 }

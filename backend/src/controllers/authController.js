@@ -3,11 +3,12 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import db from '../models/db.js';
 import generateToken from '../utils/generateToken.js';
-import { sendOtpEmail, sendEmail } from '../services/emailService.js'; // Email service lengkap
+import { sendOtpEmail, sendResetPasswordEmail, sendWelcomeEmail } from '../services/emailService.js';
+import { trackReferral } from './affiliateController.js';
 
 // ✅ REGISTER
 export const register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, referralCode } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({ message: 'Harap isi semua kolom.' });
@@ -33,12 +34,17 @@ export const register = async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
 
-    await sendOtpEmail(email, otp);
+    await sendOtpEmail(email, otp, username);
 
-    await db.promise().query(
+    const [result] = await db.promise().query(
       'INSERT INTO users (username, email, password, otp, otp_expires_at) VALUES (?, ?, ?, ?, ?)',
       [username, email, hashedPassword, otp, otpExpires]
     );
+
+    // Track referral if provided
+    if (referralCode) {
+      await trackReferral(referralCode, result.insertId);
+    }
 
     res.status(201).json({ message: 'Registrasi berhasil! Cek email Anda untuk OTP.' });
   } catch (error) {
@@ -68,6 +74,9 @@ export const verifyOtp = async (req, res) => {
       "UPDATE users SET is_verified = true, otp = NULL, otp_expires_at = NULL WHERE id = ?",
       [user.id]
     );
+
+    // Send welcome email
+    await sendWelcomeEmail(email, user.username);
 
     res.status(200).json({ message: "Akun berhasil diverifikasi! Silakan login." });
 
@@ -126,17 +135,8 @@ export const forgotPassword = async (req, res) => {
       [token, expires, user.id]
     );
 
-    const resetLink = `https://in.oxdel.id/reset-password/${token}`;
-    await sendEmail({
-      to: email,
-      subject: 'Reset Password Oxdel',
-      html: `
-        <p>Halo,</p>
-        <p>Kami menerima permintaan reset password untuk akun Anda.</p>
-        <p><a href="${resetLink}" style="display:inline-block;padding:10px 20px;background:#3b82f6;color:#fff;text-decoration:none;border-radius:5px;">Reset Password</a></p>
-        <p>Link ini akan kedaluwarsa dalam 1 jam.</p>
-      `
-    });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+    await sendResetPasswordEmail(email, resetLink, user.username);
 
     res.status(200).json({ message: "Link reset password telah dikirim ke email Anda." });
   } catch (error) {

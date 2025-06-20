@@ -6,6 +6,9 @@ import authRoutes from './src/routes/authRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
 import pageRoutes from './src/routes/pageRoutes.js';
 import templateRoutes from './src/routes/templateRoutes.js';
+import affiliateRoutes from './src/routes/affiliateRoutes.js';
+import paymentRoutes from './src/routes/paymentRoutes.js';
+import uploadRoutes from './src/routes/uploadRoutes.js';
 
 // Import middleware
 import { generalLimiter, authLimiter } from './src/middleware/rateLimiter.js';
@@ -25,7 +28,8 @@ app.use(xssProtection);
 app.use('/api/auth', authLimiter);
 app.use('/api', generalLimiter);
 
-// Body parsing
+// Body parsing (except for webhook)
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -37,6 +41,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/affiliates', affiliateRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -57,7 +64,10 @@ app.get('/api', (req, res) => {
       auth: "/api/auth",
       users: "/api/users", 
       pages: "/api/pages",
-      templates: "/api/templates"
+      templates: "/api/templates",
+      affiliates: "/api/affiliates",
+      payments: "/api/payments",
+      upload: "/api/upload"
     }
   });
 });
