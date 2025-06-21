@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
-const AuthPage = ({ onLoginSuccess }) => {
+const AuthPage = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [panel, setPanel] = useState('signIn');
   const [emailForVerify, setEmailForVerify] = useState('');
 
@@ -41,7 +45,7 @@ const AuthPage = ({ onLoginSuccess }) => {
       toast.success('Registrasi berhasil! Silakan verifikasi email.');
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal mendaftar.');
-      toast.error('Registrasi gagal!');  // Error toast
+      toast.error('Registrasi gagal!');
     } finally {
       setLoading(false);
     }
@@ -76,12 +80,15 @@ const AuthPage = ({ onLoginSuccess }) => {
         email,
         password,
       });
-      localStorage.setItem('token', response.data.token);
-      onLoginSuccess?.();
-      toast.success('Login berhasil!'); 
+      
+      // Use AuthContext login method
+      login(response.data, response.data.token);
+      
+      toast.success('Login berhasil!');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal login.');
-      toast.error('Login gagal!');  // Error toast
+      toast.error('Login gagal!');
     } finally {
       setLoading(false);
     }
@@ -98,7 +105,7 @@ const AuthPage = ({ onLoginSuccess }) => {
       toast.success('Link reset telah dikirim ke email!');
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal mengirim link reset.');
-      toast.error('Gagal mengirim link reset!');  // Error toast
+      toast.error('Gagal mengirim link reset!');
     } finally {
       setLoading(false);
     }

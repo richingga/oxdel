@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreatePageModal from '../components/CreatePageModal';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 // --- ICONS (Inline SVG) ---
@@ -19,7 +20,7 @@ const PanelRightCloseIcon = ({ className }) => <svg xmlns="http://www.w3.org/200
 
 // --- PAGE COMPONENTS ---
 
-const DashboardOverview = ({ stats, recentPages, onLogout }) => (
+const DashboardOverview = ({ stats, recentPages }) => (
     <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <StatCard icon={<FolderIcon />} label="Total Proyek" value={stats.totalPages || 0} colorClass="bg-blue-100" />
@@ -81,7 +82,8 @@ const ProjectList = ({ title = "Semua Proyek", pages = [], showFilters = true, o
     );
 };
 
-const AccountSettings = ({ user, onUpdateProfile, onLogout }) => {
+const AccountSettings = ({ user, onUpdateProfile }) => {
+    const { logout } = useAuth();
     const [formData, setFormData] = useState({
         username: user?.username || '',
         email: user?.email || '',
@@ -135,6 +137,11 @@ const AccountSettings = ({ user, onUpdateProfile, onLogout }) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleLogout = () => {
+        logout();
+        window.location.href = '/';
     };
 
     return (
@@ -203,7 +210,7 @@ const AccountSettings = ({ user, onUpdateProfile, onLogout }) => {
                 <div className="flex justify-between items-center pt-6">
                     <button
                         type="button"
-                        onClick={onLogout}
+                        onClick={handleLogout}
                         className="px-6 py-2 text-red-600 hover:text-red-800 font-semibold"
                     >
                         Logout
@@ -305,37 +312,15 @@ const FilterButton = ({ label, active, onClick }) => (
 );
 
 // --- MAIN DASHBOARD COMPONENT ---
-export default function DashboardPage({ onLogout }) {
+export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState('dasbor');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [user, setUser] = useState(null);
     const [stats, setStats] = useState({});
     const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const navigate = useNavigate();
-
-    // Fetch user data
-    const fetchUserData = async () => {
-        try {
-            const response = await fetch('/api/auth/me', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch user data');
-            }
-            
-            const userData = await response.json();
-            setUser(userData);
-        } catch (error) {
-            console.error('Error fetching user:', error);
-            toast.error('Gagal memuat data user');
-            onLogout();
-        }
-    };
+    const { user, logout, checkAuthStatus } = useAuth();
 
     // Fetch dashboard stats
     const fetchStats = async () => {
@@ -389,7 +374,6 @@ export default function DashboardPage({ onLogout }) {
         const loadData = async () => {
             setLoading(true);
             await Promise.all([
-                fetchUserData(),
                 fetchStats(),
                 fetchPages()
             ]);
@@ -455,7 +439,6 @@ export default function DashboardPage({ onLogout }) {
                     <DashboardOverview 
                         stats={stats} 
                         recentPages={pages.slice(0, 6)} 
-                        onLogout={onLogout}
                     />
                 );
             case 'proyek':
@@ -471,8 +454,7 @@ export default function DashboardPage({ onLogout }) {
                 return (
                     <AccountSettings 
                         user={user} 
-                        onUpdateProfile={fetchUserData}
-                        onLogout={onLogout}
+                        onUpdateProfile={checkAuthStatus}
                     />
                 );
             default:
@@ -508,7 +490,10 @@ export default function DashboardPage({ onLogout }) {
                 <SidebarLink 
                     icon={<LogOutIcon />} 
                     label="Keluar" 
-                    onClick={onLogout}
+                    onClick={() => {
+                        logout();
+                        navigate('/');
+                    }}
                 />
             </div>
         </>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useAuth } from '../contexts/AuthContext';
 
 // --- ICONS ---
 const WebsiteIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
@@ -9,50 +11,80 @@ const AdsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height=
 const SeoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>;
 
 // --- PAGE SECTIONS ---
-const HeroSection = ({ stats }) => (
-    <section>
-        <div className="relative container mx-auto px-4 pt-24 pb-16 md:pt-25 md:pb-20 z-10">
-            <div className="bg-white rounded-3xl shadow-xl p-8 md:py-20 md:px-16 text-center flex flex-col justify-center">
-                <div className="max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-4 tracking-tighter">
-                        Wujudkan Ide Anda, <br />
-                        <span className="font-serif bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">Tanpa Batas Kreativitas.</span>
-                    </h1>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-slate-700 mb-6">
-                        Platform termudah untuk membangun landing page, website, dan undangan digital yang memukau. Cepat, modern, dan tanpa perlu coding.
-                    </p>
-                    
-                    {/* Stats */}
-                    {stats && (
-                        <div className="flex justify-center gap-8 mb-8 text-sm text-gray-600">
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-blue-600">{stats.totalTemplates}+</div>
-                                <div>Template</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600">{stats.totalUsers}+</div>
-                                <div>Pengguna</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-purple-600">{stats.totalPages}+</div>
-                                <div>Proyek</div>
-                            </div>
-                        </div>
-                    )}
+const HeroSection = ({ stats, isAuthenticated }) => {
+    const navigate = useNavigate();
 
-                    <div className="flex justify-center flex-col sm:flex-row gap-4">
-                        <a href="/register" className="px-8 py-4 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105">
-                            Mulai Sekarang
-                        </a>
-                        <a href="#templates" className="px-8 py-4 rounded-full font-bold text-blue-700 bg-white hover:bg-blue-100 border border-blue-200 transition-colors duration-300">
-                            Lihat Template
-                        </a>
+    const handleGetStarted = () => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/register');
+        }
+    };
+
+    const handleViewTemplates = () => {
+        if (isAuthenticated) {
+            navigate('/template-picker');
+        } else {
+            // Scroll to templates section
+            const templatesSection = document.getElementById('templates');
+            if (templatesSection) {
+                templatesSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    };
+
+    return (
+        <section>
+            <div className="relative container mx-auto px-4 pt-24 pb-16 md:pt-25 md:pb-20 z-10">
+                <div className="bg-white rounded-3xl shadow-xl p-8 md:py-20 md:px-16 text-center flex flex-col justify-center">
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-4 tracking-tighter">
+                            Wujudkan Ide Anda, <br />
+                            <span className="font-serif bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">Tanpa Batas Kreativitas.</span>
+                        </h1>
+                        <p className="text-lg md:text-xl max-w-2xl mx-auto text-slate-700 mb-6">
+                            Platform termudah untuk membangun landing page, website, dan undangan digital yang memukau. Cepat, modern, dan tanpa perlu coding.
+                        </p>
+                        
+                        {/* Stats */}
+                        {stats && (
+                            <div className="flex justify-center gap-8 mb-8 text-sm text-gray-600">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-blue-600">{stats.totalTemplates}+</div>
+                                    <div>Template</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-green-600">{stats.totalUsers}+</div>
+                                    <div>Pengguna</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-purple-600">{stats.totalPages}+</div>
+                                    <div>Proyek</div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex justify-center flex-col sm:flex-row gap-4">
+                            <button 
+                                onClick={handleGetStarted}
+                                className="px-8 py-4 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105"
+                            >
+                                {isAuthenticated ? 'Ke Dashboard' : 'Mulai Sekarang'}
+                            </button>
+                            <button 
+                                onClick={handleViewTemplates}
+                                className="px-8 py-4 rounded-full font-bold text-blue-700 bg-white hover:bg-blue-100 border border-blue-200 transition-colors duration-300"
+                            >
+                                {isAuthenticated ? 'Pilih Template' : 'Lihat Template'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 const FeaturesSection = () => {
     const featuresData = [
@@ -107,98 +139,117 @@ const FeaturesSection = () => {
     );
 };
 
-const TemplatesSection = ({ templates, loading }) => (
-    <section id="templates" className="py-20">
-        <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold mb-3 tracking-tight">Template Siap Pakai</h2>
-                <p className="text-lg text-slate-700 max-w-2xl mx-auto">
-                    Pilih dari {templates.length}+ template profesional yang dapat disesuaikan dengan kebutuhan Anda.
-                </p>
-            </div>
-            
-            {loading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+const TemplatesSection = ({ templates, loading, isAuthenticated }) => {
+    const navigate = useNavigate();
+
+    const handleUseTemplate = (template) => {
+        if (isAuthenticated) {
+            // Redirect to template picker with category filter
+            navigate(`/template-picker?category=${encodeURIComponent(template.category)}`);
+        } else {
+            navigate('/register');
+        }
+    };
+
+    return (
+        <section id="templates" className="py-20">
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold mb-3 tracking-tight">Template Siap Pakai</h2>
+                    <p className="text-lg text-slate-700 max-w-2xl mx-auto">
+                        Pilih dari {templates.length}+ template profesional yang dapat disesuaikan dengan kebutuhan Anda.
+                    </p>
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {templates.slice(0, 6).map((template) => (
-                        <div key={template.id} className="group relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 border border-slate-200">
-                            <div className="aspect-square relative">
-                                <img 
-                                    src={template.thumbnail_url || template.preview_url || `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`} 
-                                    alt={template.name} 
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    onError={(e) => {
-                                        e.target.src = `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`;
-                                    }}
-                                />
-                                {template.is_premium && (
-                                    <div className="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        Premium
-                                    </div>
-                                )}
-                                {template.featured && (
-                                    <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        Featured
-                                    </div>
-                                )}
-                            </div>
-                            <div className="p-4 sm:p-6">
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-1">{template.name}</h3>
-                                    {template.rating > 0 && (
-                                        <div className="flex items-center text-yellow-500 text-sm">
-                                            <span>★</span>
-                                            <span className="ml-1">{template.rating}</span>
+                
+                {loading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {templates.slice(0, 6).map((template) => (
+                            <div key={template.id} className="group relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 border border-slate-200">
+                                <div className="aspect-square relative">
+                                    <img 
+                                        src={template.thumbnail_url || template.preview_url || `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`} 
+                                        alt={template.name} 
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                        onError={(e) => {
+                                            e.target.src = `https://placehold.co/400x400/3b82f6/ffffff?text=${encodeURIComponent(template.name)}`;
+                                        }}
+                                    />
+                                    {template.is_premium && (
+                                        <div className="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            Premium
+                                        </div>
+                                    )}
+                                    {template.featured && (
+                                        <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            Featured
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex gap-2 mb-4">
-                                    <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">
-                                        {template.category}
-                                    </span>
-                                    <span className="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">
-                                        {template.type}
-                                    </span>
-                                </div>
-                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                                    <a 
-                                        href={`/api/templates/${template.id}/preview`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-300"
-                                    >
-                                        Preview
-                                    </a>
-                                    <a 
-                                        href="/register"
-                                        className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
-                                    >
-                                        Gunakan
-                                    </a>
+                                <div className="p-4 sm:p-6">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-1">{template.name}</h3>
+                                        {template.rating > 0 && (
+                                            <div className="flex items-center text-yellow-500 text-sm">
+                                                <span>★</span>
+                                                <span className="ml-1">{template.rating}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2 mb-4">
+                                        <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">
+                                            {template.category}
+                                        </span>
+                                        <span className="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">
+                                            {template.type}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                                        <a 
+                                            href={`/api/templates/${template.id}/preview`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-300"
+                                        >
+                                            Preview
+                                        </a>
+                                        <button 
+                                            onClick={() => handleUseTemplate(template)}
+                                            className="flex-1 text-center py-2.5 rounded-full font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+                                        >
+                                            Gunakan
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                )}
+                
+                <div className="text-center mt-12">
+                    <button 
+                        onClick={() => {
+                            if (isAuthenticated) {
+                                navigate('/template-picker');
+                            } else {
+                                navigate('/register');
+                            }
+                        }}
+                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-blue-300"
+                    >
+                        {isAuthenticated ? 'Lihat Semua Template' : 'Daftar untuk Akses Template'}
+                        <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </button>
                 </div>
-            )}
-            
-            <div className="text-center mt-12">
-                <a 
-                    href="/template-picker"
-                    className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-blue-300"
-                >
-                    Lihat Semua Template
-                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 const TestimonialsSection = () => {
     const testimonialsData = [
@@ -253,38 +304,55 @@ const TestimonialsSection = () => {
     );
 };
 
-const CTASection = () => (
-    <section className="py-20">
-        <div className="container mx-auto px-6">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-16 text-center text-white">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Siap Memulai Proyek Anda?</h2>
-                <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                    Bergabunglah dengan ribuan pengguna yang telah mempercayai Oxdel untuk kebutuhan digital mereka.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a 
-                        href="/register"
-                        className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors duration-300 shadow-lg"
-                    >
-                        Daftar Gratis Sekarang
-                    </a>
-                    <a 
-                        href="/template-picker"
-                        className="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-blue-600 transition-colors duration-300"
-                    >
-                        Jelajahi Template
-                    </a>
+const CTASection = ({ isAuthenticated }) => {
+    const navigate = useNavigate();
+
+    return (
+        <section className="py-20">
+            <div className="container mx-auto px-6">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-16 text-center text-white">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4">Siap Memulai Proyek Anda?</h2>
+                    <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+                        Bergabunglah dengan ribuan pengguna yang telah mempercayai Oxdel untuk kebutuhan digital mereka.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button 
+                            onClick={() => {
+                                if (isAuthenticated) {
+                                    navigate('/dashboard');
+                                } else {
+                                    navigate('/register');
+                                }
+                            }}
+                            className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+                        >
+                            {isAuthenticated ? 'Ke Dashboard' : 'Daftar Gratis Sekarang'}
+                        </button>
+                        <button 
+                            onClick={() => {
+                                if (isAuthenticated) {
+                                    navigate('/template-picker');
+                                } else {
+                                    navigate('/register');
+                                }
+                            }}
+                            className="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-blue-600 transition-colors duration-300"
+                        >
+                            {isAuthenticated ? 'Pilih Template' : 'Jelajahi Template'}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 // --- MAIN COMPONENT ---
 export default function HomePage() {
     const [templates, setTemplates] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -360,11 +428,11 @@ export default function HomePage() {
 
             <div className="antialiased">
                 <main>
-                    <HeroSection stats={stats} />
+                    <HeroSection stats={stats} isAuthenticated={isAuthenticated} />
                     <FeaturesSection />
-                    <TemplatesSection templates={templates} loading={loading} />
+                    <TemplatesSection templates={templates} loading={loading} isAuthenticated={isAuthenticated} />
                     <TestimonialsSection />
-                    <CTASection />
+                    <CTASection isAuthenticated={isAuthenticated} />
                 </main>
             </div>
         </>

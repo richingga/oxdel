@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 // --- ICONS ---
@@ -167,6 +167,7 @@ const PreviewModal = ({ template, isOpen, onClose }) => {
 
 export default function TemplatePicker() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [templates, setTemplates] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,6 +197,12 @@ export default function TemplatePicker() {
         setTemplates(templatesData.data || []);
         setCategories(['Semua', ...(categoriesData.data || [])]);
         
+        // Check for category filter from URL params
+        const categoryParam = searchParams.get('category');
+        if (categoryParam && categoriesData.data?.includes(categoryParam)) {
+          setActiveCategory(categoryParam);
+        }
+        
       } catch (error) {
         console.error('Error fetching templates:', error);
         toast.error('Gagal memuat template. Silakan coba lagi.');
@@ -205,7 +212,7 @@ export default function TemplatePicker() {
     };
 
     fetchData();
-  }, []);
+  }, [searchParams]);
 
   // Filter templates berdasarkan kategori & pencarian
   const filteredTemplates = templates
