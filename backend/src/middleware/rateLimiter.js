@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 // Rate limiter untuk API umum
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 100, // maksimal 100 request per 15 menit
+  max: 500, // maksimal 500 request per 15 menit
   message: {
     success: false,
     message: 'Terlalu banyak request, coba lagi dalam 15 menit'
@@ -15,7 +15,7 @@ export const generalLimiter = rateLimit({
 // Rate limiter untuk auth endpoints (lebih ketat)
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 5, // maksimal 5 percobaan login per 15 menit
+  max: 50, // maksimal 5 percobaan login per 15 menit
   message: {
     success: false,
     message: 'Terlalu banyak percobaan login, coba lagi dalam 15 menit'

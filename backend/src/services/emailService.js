@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 // Transporter reusable (1x deklarasi saja)
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT) || 587,
   secure: process.env.SMTP_PORT == 465, // true for 465 (SSL), false for 587 (TLS)
