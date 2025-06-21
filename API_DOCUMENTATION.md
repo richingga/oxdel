@@ -318,6 +318,29 @@ Get public page data (no auth required).
 #### GET /pages/render/:slug
 Render public page as HTML (no auth required).
 
+### Upload
+
+#### POST /upload/image
+Upload single image to Cloudinary (requires auth).
+
+**Request:** `multipart/form-data` with field `image`.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "url": "https://res.cloudinary.com/.../image.jpg",
+    "public_id": "oxdel/abc123",
+    "width": 800,
+    "height": 600,
+    "format": "jpg",
+    "size": 12345
+  },
+  "message": "Gambar berhasil diupload"
+}
+```
+
 ### Users
 
 #### GET /users/profile

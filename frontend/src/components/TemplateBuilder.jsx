@@ -38,6 +38,43 @@ const FormField = ({ slot, value, onChange, error }) => {
     error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
   }`;
 
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Sesi berakhir, silakan login kembali');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      setUploading(true);
+      const res = await fetch('/api/upload/image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Gagal upload gambar');
+      }
+      onChange(key, data.data.url);
+      toast.success('Gambar berhasil diupload');
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
   const renderInput = () => {
     switch (type) {
       case 'textarea':
@@ -62,14 +99,25 @@ const FormField = ({ slot, value, onChange, error }) => {
               placeholder="Masukkan URL gambar (https://...)"
               className={baseInputClass}
             />
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="text-sm"
+              />
+              {uploading && (
+                <span className="text-sm text-gray-500">Mengupload...</span>
+              )}
+            </div>
             <p className="text-sm text-gray-500">
-              Masukkan URL gambar dari internet atau upload ke layanan seperti Imgur, Cloudinary, dll.
+              Masukkan URL gambar atau pilih file untuk diupload ke server.
             </p>
             {value && (
               <div className="mt-2">
-                <img 
-                  src={value} 
-                  alt="Preview" 
+                <img
+                  src={value}
+                  alt="Preview"
                   className="max-w-xs max-h-32 object-cover rounded border"
                   onError={(e) => {
                     e.target.style.display = 'none';
