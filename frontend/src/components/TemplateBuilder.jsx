@@ -31,6 +31,16 @@ const SaveIcon = ({ className }) => (
   </svg>
 );
 
+const UploadIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    className={className}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7,10 12,5 17,10" />
+    <line x1="12" x2="12" y1="5" y2="15" />
+  </svg>
+);
+
 const FormField = ({ slot, value, onChange, error }) => {
   const { key, label, type, placeholder, required } = slot;
 
@@ -43,6 +53,19 @@ const FormField = ({ slot, value, onChange, error }) => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Hanya file gambar yang diizinkan');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 5MB');
+      return;
+    }
+    
     const token = localStorage.getItem('token');
     if (!token) {
       toast.error('Sesi berakhir, silakan login kembali');
@@ -61,13 +84,17 @@ const FormField = ({ slot, value, onChange, error }) => {
         },
         body: formData
       });
+      
       const data = await res.json();
+      
       if (!res.ok) {
         throw new Error(data.message || 'Gagal upload gambar');
       }
+      
       onChange(key, data.data.url);
       toast.success('Gambar berhasil diupload');
     } catch (err) {
+      console.error('Upload error:', err);
       toast.error(err.message);
     } finally {
       setUploading(false);
@@ -91,40 +118,71 @@ const FormField = ({ slot, value, onChange, error }) => {
       
       case 'file':
         return (
-          <div className="space-y-2">
-            <input
-              type="url"
-              value={value || ''}
-              onChange={(e) => onChange(key, e.target.value)}
-              placeholder="Masukkan URL gambar (https://...)"
-              className={baseInputClass}
-            />
-            <div className="flex items-center gap-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <input
+                type="url"
+                value={value || ''}
+                onChange={(e) => onChange(key, e.target.value)}
+                placeholder="Atau masukkan URL gambar (https://...)"
+                className={baseInputClass}
+              />
+            </div>
+            
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileUpload}
-                className="text-sm"
+                className="hidden"
+                id={`file-${key}`}
+                disabled={uploading}
               />
-              {uploading && (
-                <span className="text-sm text-gray-500">Mengupload...</span>
-              )}
+              <label 
+                htmlFor={`file-${key}`} 
+                className={`cursor-pointer flex flex-col items-center gap-2 ${uploading ? 'opacity-50' : ''}`}
+              >
+                <UploadIcon className="w-8 h-8 text-gray-400" />
+                <span className="text-sm font-medium text-gray-600">
+                  {uploading ? 'Mengupload...' : 'Klik untuk upload gambar'}
+                </span>
+                <span className="text-xs text-gray-500">
+                  PNG, JPG, JPEG (Max 5MB)
+                </span>
+              </label>
             </div>
-            <p className="text-sm text-gray-500">
-              Masukkan URL gambar atau pilih file untuk diupload ke server.
-            </p>
+            
             {value && (
-              <div className="mt-2">
+              <div className="mt-3">
                 <img
                   src={value}
                   alt="Preview"
-                  className="max-w-xs max-h-32 object-cover rounded border"
+                  className="max-w-full max-h-32 object-cover rounded border shadow-sm"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
                 />
               </div>
             )}
+          </div>
+        );
+      
+      case 'color':
+        return (
+          <div className="flex gap-3">
+            <input
+              type="color"
+              value={value || '#3B82F6'}
+              onChange={(e) => onChange(key, e.target.value)}
+              className="w-16 h-12 border border-gray-300 rounded cursor-pointer"
+            />
+            <input
+              type="text"
+              value={value || '#3B82F6'}
+              onChange={(e) => onChange(key, e.target.value)}
+              placeholder={placeholder}
+              className={`${baseInputClass} flex-1`}
+            />
           </div>
         );
       
@@ -387,7 +445,7 @@ const TemplateBuilder = () => {
           </button>
         </div>
         <div 
-          className="p-6 min-h-96"
+          className="p-6 min-h-96 overflow-auto"
           dangerouslySetInnerHTML={{ __html: previewHtml }}
         />
       </div>
@@ -479,7 +537,7 @@ const TemplateBuilder = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Form Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-6 max-h-screen overflow-y-auto">
               <h2 className="text-lg font-semibold text-gray-800 mb-6">Isi Konten Halaman</h2>
               
               <div className="space-y-6">
@@ -512,7 +570,7 @@ const TemplateBuilder = () => {
             </div>
 
             {/* Preview Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-6 max-h-screen overflow-y-auto">
               <h2 className="text-lg font-semibold text-gray-800 mb-6">Preview Real-time</h2>
               
               <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 min-h-96">
